@@ -7,17 +7,25 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <style>
+    /* ─── 3D GLOBAL CANVAS ─── */
+    #hero-canvas {
+      position:fixed; inset:0; z-index:0;
+      width:100%; height:100%;
+      pointer-events:none;
+    }
+
     /* ─── RESET & VARIABLES ─── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; font-size: 16px; }
+    html { scroll-behavior: smooth; font-size: 16px; background: var(--bg); }
 
     :root {
       --bg:       #06080e;
       --bg2:      #090c14;
-      --surface:  #0e1220;
-      --surface2: #131828;
-      --surface3: #192030;
+      --surface:  rgba(14,18,32,0.82);
+      --surface2: rgba(19,24,40,0.85);
+      --surface3: rgba(25,32,48,0.88);
       --border:   rgba(160,180,230,0.07);
       --border2:  rgba(160,180,230,0.13);
       --gold:        #8eb4e0;
@@ -33,7 +41,7 @@
     }
 
     body {
-      background: var(--bg);
+      background: transparent;
       color: var(--text);
       font-family: 'DM Sans', sans-serif;
       font-weight: 300;
@@ -41,6 +49,8 @@
       line-height: 1.75;
       overflow-x: hidden;
     }
+
+    /* ─── DARK BASE LAYER (behind canvas) ─── */
 
     /* ─── GRAIN OVERLAY ─── */
     body::before {
@@ -786,6 +796,8 @@
 <body>
   <div id="progress-bar"></div>
 
+  <canvas id="hero-canvas"></canvas>
+
   <!-- ─── NAV ─── -->
   <nav>
     <div class="nav-logo" onclick="show('home')">Aymeric Millerioux--Tamain</div>
@@ -798,7 +810,7 @@
       <li><a href="#" onclick="return show('attestations')" id="nav-attestations">Attestations</a></li>
     </ul>
     <div class="nav-right">
-      <a class="nav-cv-btn" href="cv.pdf" target="_blank">↓ CV</a>
+      <a class="nav-cv-btn" href="documents/cv.pdf" target="_blank">↓ CV</a>
     </div>
   </nav>
 
@@ -806,7 +818,6 @@
        ACCUEIL
   ═══════════════════════════════════ -->
   <section id="home" class="page active">
-    <div class="home-bg"></div>
     <div class="home-grid-deco"></div>
     <div class="home-inner">
 
@@ -818,7 +829,7 @@
         <div class="rule a3"></div>
 
         <p class="home-tagline a3">
-          Étudiant en BTS Services Informatiques aux Organisations.
+          Étudiant en BTS SIO option SLAM, passionné par le développement web et applicatif. Maîtrise du PHP, Python, C#, HTML/CSS et SQL — avec une expérience concrète de mise en production en entreprise.
         </p>
 
         <div class="home-meta a4">
@@ -828,7 +839,7 @@
           </div>
           <div class="meta-item">
             <div class="label">Option</div>
-            <div class="val">SLAM / SISR</div>
+            <div class="val">SLAM</div>
           </div>
           <div class="meta-item">
             <div class="label">Promotion</div>
@@ -836,12 +847,12 @@
           </div>
           <div class="meta-item">
             <div class="label">Établissement</div>
-            <div class="val">Nom du lycée</div>
+            <div class="val">Raoul Follereau · Nevers</div>
           </div>
         </div>
 
         <div class="home-actions a5">
-          <a class="btn-gold" href="cv.pdf" target="_blank">
+          <a class="btn-gold" href="documents/cv.pdf" target="_blank">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
             Télécharger le CV
           </a>
@@ -852,13 +863,13 @@
 
         <div class="skills-strip a6">
           <span class="skill-pill">Python</span>
-          <span class="skill-pill">JavaScript</span>
           <span class="skill-pill">PHP</span>
-          <span class="skill-pill">SQL</span>
-          <span class="skill-pill">Linux</span>
-          <span class="skill-pill">Réseaux</span>
-          <span class="skill-pill">Git</span>
+          <span class="skill-pill">C#</span>
           <span class="skill-pill">HTML / CSS</span>
+          <span class="skill-pill">SQL / MySQL</span>
+          <span class="skill-pill">Git</span>
+          <span class="skill-pill">Linux</span>
+          <span class="skill-pill">WordPress</span>
         </div>
       </div>
 
@@ -887,95 +898,134 @@
     <div class="inner">
       <div class="section-head">
         <p class="eyebrow">Situation professionnelle</p>
-        <h2>Stage en entreprise<br><em>1ère année</em></h2>
+        <h2>Stages en entreprise<br><em>2 années</em></h2>
         <div class="rule"></div>
-        <p class="lead">Présentation de mon stage de première année, des missions réalisées et des compétences mobilisées.</p>
+        <p class="lead">Présentation de mes deux stages, des missions réalisées et des compétences mobilisées au sein d'environnements professionnels réels.</p>
       </div>
 
-      <div class="stage-grid">
-        <div class="info-cell">
-          <div class="cell-label">Entreprise</div>
-          <div class="cell-value">Nom de l'entreprise</div>
-          <div class="cell-sub">Secteur d'activité · Ville, Pays</div>
+      <!-- ─── STAGE 2ème année ─── -->
+      <div style="margin-bottom:64px;">
+        <div class="eyebrow" style="margin-bottom:20px;">2ème année · 2025 / 2026</div>
+        <div class="stage-grid">
+          <div class="info-cell">
+            <div class="cell-label">Entreprise</div>
+            <div class="cell-value">Inore Groupe Impression</div>
+            <div class="cell-sub">Imprimerie · Varennes-Vauzelles (58)</div>
+          </div>
+          <div class="info-cell">
+            <div class="cell-label">Période</div>
+            <div class="cell-value">Du 19/01/2026 au 13/03/2026</div>
+            <div class="cell-sub">Durée : 8 semaines · Tutrice : Mme Valverde</div>
+          </div>
+          <div class="info-cell">
+            <div class="cell-label">Contexte &amp; rôle</div>
+            <div class="cell-value">Développeur web — mission complète</div>
+            <div class="cell-sub">PME d'impression (flyers, affiches, signalétique). Pas de service informatique internalisé. Mission confiée en autonomie totale : analyse, conception, développement et mise en production.</div>
+          </div>
+          <div class="info-cell">
+            <div class="cell-label">Environnement technique</div>
+            <div class="cell-value">PHP · MySQL · WordPress · Git</div>
+            <div class="cell-sub">VS Code, Laragon, InfinityFree, LocalWP, FPDF, Tesseract OCR, EasyOCR, Google Workspace</div>
+          </div>
         </div>
-        <div class="info-cell">
-          <div class="cell-label">Période</div>
-          <div class="cell-value">Du XX/XX/XXXX au XX/XX/XXXX</div>
-          <div class="cell-sub">Durée : X semaines · Tuteur : M./Mme Nom</div>
+
+        <div class="block-title">Missions réalisées</div>
+        <div class="mission-block">
+          Mission principale : développement de <strong style="color:var(--gold);font-style:normal;">ImpriFrais</strong>, une application web interne de gestion des frais professionnels. Les employés soumettaient leurs justificatifs de manière informelle (papier ou e-mail), rendant le suivi chronophage pour la comptable. J'ai conçu et mis en production une application PHP/MySQL permettant à chaque employé de saisir ses frais, joindre ses justificatifs numérisés, et à la comptable d'en visualiser et d'en exporter l'ensemble. L'application intègre une reconnaissance OCR automatique des tickets de caisse pour pré-remplir les formulaires, une génération de PDF via FPDF, un système de thèmes visuels (11 thèmes), et un responsive design complet pour une utilisation mobile. En parallèle, intervention sur le site web vitrine WordPress de l'entreprise : amélioration du responsive design, révision des breakpoints CSS, et corrections diverses.
         </div>
-        <div class="info-cell">
-          <div class="cell-label">Contexte &amp; rôle</div>
-          <div class="cell-value">Votre poste / mission principale</div>
-          <div class="cell-sub">Description courte du contexte de l'entreprise et de votre positionnement au sein de l'équipe.</div>
+
+        <div class="block-title">Compétences mobilisées</div>
+        <div class="comp-box">
+          <ul class="comp-list">
+            <li>
+              Développement d'une application web PHP/MySQL de A à Z — architecture MVC allégée, authentification sécurisée avec hachage des mots de passe, CRUD complet.
+              <span class="ctag">B1</span>
+            </li>
+            <li>
+              Intégration d'OCR (Tesseract + EasyOCR) pour la reconnaissance automatique de tickets de caisse, avec post-traitement par expressions régulières.
+              <span class="ctag">B1</span>
+            </li>
+            <li>
+              Génération dynamique de PDF (FPDF) incluant justificatifs images, gestion multi-formats, sauts de page automatiques.
+              <span class="ctag">B1</span>
+            </li>
+            <li>
+              Déploiement en production sur hébergement externe (InfinityFree), gestion des chemins serveur, versioning avec Git.
+              <span class="ctag">B2</span>
+            </li>
+            <li>
+              Maintenance et amélioration du site WordPress vitrine : responsive design, breakpoints CSS, respect de la charte graphique.
+              <span class="ctag">B2</span>
+            </li>
+            <li>
+              Interventions ponctuelles : reconfiguration d'imprimantes réseau, résolution de problèmes Java, correction Google Agenda et Google Groups.
+              <span class="ctag">B3</span>
+            </li>
+          </ul>
         </div>
-        <div class="info-cell">
-          <div class="cell-label">Environnement technique</div>
-          <div class="cell-value">Technologies mobilisées</div>
-          <div class="cell-sub">Langages, outils, OS, infrastructure utilisés pendant le stage.</div>
-        </div>
+
+        <div class="block-title">Documents justificatifs</div>
+        <a class="doc-row" href="documents/rapport-stage.pdf" target="_blank">
+          <div class="doc-icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </div>
+          <div>
+            <div class="doc-label">Rapport de stage — 2ème année</div>
+            <div class="doc-sub">Inore Groupe Impression · Janvier – Mars 2026</div>
+          </div>
+          <span class="doc-arr">→</span>
+        </a>
+        <a class="doc-row" href="documents/attestation-stage-2.pdf" target="_blank">
+          <div class="doc-icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+          </div>
+          <div>
+            <div class="doc-label">Attestation de stage — 2ème année</div>
+            <div class="doc-sub">Signée par Mme Valverde · 8 semaines</div>
+          </div>
+          <span class="doc-arr">→</span>
+        </a>
       </div>
 
-      <div class="block-title">Missions réalisées</div>
-      <div class="mission-block">
-        Décrivez ici vos principales missions. Expliquez les problématiques rencontrées, les solutions apportées et les résultats obtenus. Soyez précis et factuel pour démontrer votre implication et les compétences mobilisées. Mentionnez les outils, méthodes et livrables produits.
+      <!-- ─── STAGE 1ère année ─── -->
+      <div>
+        <div class="eyebrow" style="margin-bottom:20px;">1ère année · 2024 / 2025</div>
+        <div class="stage-grid">
+          <div class="info-cell">
+            <div class="cell-label">Entreprise</div>
+            <div class="cell-value">Fédération des Centres Sociaux de la Nièvre</div>
+            <div class="cell-sub">Association · Nevers (58)</div>
+          </div>
+          <div class="info-cell">
+            <div class="cell-label">Période</div>
+            <div class="cell-value">Du 02/06/2025 au 04/07/2025</div>
+            <div class="cell-sub">Durée : 5 semaines</div>
+          </div>
+          <div class="info-cell">
+            <div class="cell-label">Contexte &amp; rôle</div>
+            <div class="cell-value">Stage informatique — 1ère année BTS SIO</div>
+            <div class="cell-sub">Stage de découverte du milieu professionnel, réalisé au sein d'une fédération associative du secteur social.</div>
+          </div>
+          <div class="info-cell">
+            <div class="cell-label">Adresse</div>
+            <div class="cell-value">2 Bd Jacques Duclos</div>
+            <div class="cell-sub">58000 Nevers</div>
+          </div>
+        </div>
+
+        <div class="block-title">Documents justificatifs</div>
+        <a class="doc-row" href="documents/attestation-stage-1.pdf" target="_blank">
+          <div class="doc-icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+          </div>
+          <div>
+            <div class="doc-label">Attestation de stage — 1ère année</div>
+            <div class="doc-sub">Fédération des Centres Sociaux de la Nièvre · Juin – Juillet 2025</div>
+          </div>
+          <span class="doc-arr">→</span>
+        </a>
       </div>
 
-      <div class="block-title">Compétences mobilisées</div>
-      <div class="comp-box">
-        <ul class="comp-list">
-          <li>
-            Compétence 1 — description courte de la mise en œuvre dans ce contexte de stage.
-            <span class="ctag">B1.1</span>
-          </li>
-          <li>
-            Compétence 2 — description courte de la mise en œuvre dans ce contexte de stage.
-            <span class="ctag">B2.1</span>
-          </li>
-          <li>
-            Compétence 3 — description courte de la mise en œuvre dans ce contexte de stage.
-            <span class="ctag">B3.1</span>
-          </li>
-          <li>
-            Compétence 4 — description courte de la mise en œuvre dans ce contexte de stage.
-            <span class="ctag">B4.1</span>
-          </li>
-        </ul>
-      </div>
-
-      <div class="block-title">Documents justificatifs</div>
-
-      <a class="doc-row" href="#">
-        <div class="doc-icon-wrap">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-        </div>
-        <div>
-          <div class="doc-label">Rapport de stage — 1ère année</div>
-          <div class="doc-sub">Document PDF · Ajouter le lien</div>
-        </div>
-        <span class="doc-arr">→</span>
-      </a>
-
-      <a class="doc-row" href="#">
-        <div class="doc-icon-wrap">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
-        </div>
-        <div>
-          <div class="doc-label">Captures d'écran / Livrables</div>
-          <div class="doc-sub">Preuves du travail réalisé · Ajouter le lien</div>
-        </div>
-        <span class="doc-arr">→</span>
-      </a>
-
-      <a class="doc-row" href="#">
-        <div class="doc-icon-wrap">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
-        </div>
-        <div>
-          <div class="doc-label">Vidéo de démonstration (optionnel)</div>
-          <div class="doc-sub">Présentation de la réalisation · Ajouter le lien</div>
-        </div>
-        <span class="doc-arr">→</span>
-      </a>
     </div>
   </section>
 
@@ -996,25 +1046,28 @@
         <div class="act-card">
           <div class="act-num">01</div>
           <div class="act-body">
-            <div class="act-period">Septembre 2024 → Novembre 2024</div>
-            <div class="act-title">Titre de l'activité / Projet 1</div>
+            <div class="act-period">2025 → 2026 · Lycée Raoul Follereau, Nevers</div>
+            <div class="act-title">ICGO — Gestion des formations</div>
             <p class="act-desc">
-              Décrivez ici le contexte, les objectifs et les résultats de cette activité. Mentionnez les technologies utilisées, les difficultés rencontrées et les solutions apportées. Soyez précis et factuel.
+              Développement d'une application client-serveur de gestion des stages pour l'Institut Claude Gaston Octave (I-CGO), organisme de formation fictif. L'application permet de gérer les sessions de formation, les inscriptions de stagiaires, les formateurs, les modules, les compétences et les agences. Architecture en couches (DAO, métier, présentation) avec connexion sécurisée. Réalisation individuelle.
             </p>
             <div class="tags">
-              <span class="tag gold">B1.1</span>
-              <span class="tag gold">B1.2</span>
-              <span class="tag">Python</span>
-              <span class="tag">Base de données</span>
+              <span class="tag gold">Concevoir &amp; développer</span>
+              <span class="tag gold">Gérer les données</span>
+              <span class="tag gold">Maintenance</span>
+              <span class="tag">C#</span>
+              <span class="tag">SQL Server</span>
+              <span class="tag">Visual Studio 2022</span>
+              <span class="tag">Architecture en couches</span>
             </div>
             <div style="margin-top:18px;">
-              <a class="doc-row" href="#" style="padding:11px 16px;">
+              <a class="doc-row" href="documents/fiche-situation-icgo.pdf" target="_blank" style="padding:11px 16px;">
                 <div class="doc-icon-wrap" style="width:28px;height:28px;">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                 </div>
                 <div>
-                  <div class="doc-label" style="font-size:12px;">Document justificatif</div>
-                  <div class="doc-sub">Ajouter le lien vers votre production</div>
+                  <div class="doc-label" style="font-size:12px;">Fiche E6 — Réalisation N°1</div>
+                  <div class="doc-sub">BTS SIO · Session 2026</div>
                 </div>
                 <span class="doc-arr">→</span>
               </a>
@@ -1025,56 +1078,29 @@
         <div class="act-card">
           <div class="act-num">02</div>
           <div class="act-body">
-            <div class="act-period">Novembre 2024 → Janvier 2025</div>
-            <div class="act-title">Titre de l'activité / Projet 2</div>
+            <div class="act-period">2025 → 2026 · Lycée Raoul Follereau, Nevers</div>
+            <div class="act-title">GSB — Gestion des comptes rendus</div>
             <p class="act-desc">
-              Décrivez ici le contexte, les objectifs et les résultats de cette activité. Mentionnez les technologies utilisées, les difficultés rencontrées et les solutions apportées.
+              Développement d'une application web MVC de gestion des comptes rendus de visites médicales pour le laboratoire fictif Galaxy Swiss Bourdin (GSB). Trois profils utilisateurs distincts (visiteur, délégué, responsable) avec authentification sécurisée. Fonctionnalités : ajout et modification de comptes rendus (médicaments présentés, échantillons offerts, documentation remise), consultation par période, région, visiteur et secteur, statistiques pour délégués et responsables. Réalisation individuelle.
             </p>
             <div class="tags">
-              <span class="tag gold">B2.1</span>
-              <span class="tag gold">B2.2</span>
+              <span class="tag gold">Concevoir &amp; développer</span>
+              <span class="tag gold">Gérer les données</span>
+              <span class="tag gold">Maintenance</span>
               <span class="tag">PHP</span>
-              <span class="tag">HTML / CSS</span>
               <span class="tag">MySQL</span>
+              <span class="tag">MVC</span>
+              <span class="tag">HTML / CSS</span>
+              <span class="tag">Laragon</span>
             </div>
             <div style="margin-top:18px;">
-              <a class="doc-row" href="#" style="padding:11px 16px;">
+              <a class="doc-row" href="documents/fiche-situation-gsb.pdf" target="_blank" style="padding:11px 16px;">
                 <div class="doc-icon-wrap" style="width:28px;height:28px;">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                 </div>
                 <div>
-                  <div class="doc-label" style="font-size:12px;">Document justificatif</div>
-                  <div class="doc-sub">Ajouter le lien vers votre production</div>
-                </div>
-                <span class="doc-arr">→</span>
-              </a>
-            </div>
-          </div>
-        </div>
-
-        <div class="act-card">
-          <div class="act-num">03</div>
-          <div class="act-body">
-            <div class="act-period">Février 2025 → Avril 2025</div>
-            <div class="act-title">Titre de l'activité / Projet 3</div>
-            <p class="act-desc">
-              Décrivez ici le contexte, les objectifs et les résultats de cette activité. Mentionnez les technologies utilisées et les compétences réseau ou système mobilisées.
-            </p>
-            <div class="tags">
-              <span class="tag gold">B3.1</span>
-              <span class="tag gold">B4.1</span>
-              <span class="tag">Réseaux</span>
-              <span class="tag">Linux</span>
-              <span class="tag">Virtualisation</span>
-            </div>
-            <div style="margin-top:18px;">
-              <a class="doc-row" href="#" style="padding:11px 16px;">
-                <div class="doc-icon-wrap" style="width:28px;height:28px;">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                </div>
-                <div>
-                  <div class="doc-label" style="font-size:12px;">Document justificatif</div>
-                  <div class="doc-sub">Ajouter le lien vers votre production</div>
+                  <div class="doc-label" style="font-size:12px;">Fiche E6 — Réalisation N°2</div>
+                  <div class="doc-sub">BTS SIO · Session 2026</div>
                 </div>
                 <span class="doc-arr">→</span>
               </a>
@@ -1156,9 +1182,24 @@
               </div>
               <div class="veille-title">Limites éthiques et techniques des IA médicales</div>
               <p class="veille-excerpt">
-                Une série d'articles scientifiques pointe trois problèmes récurrents : les biais algorithmiques (précision moindre sur certains groupes ethniques), la « boîte noire », et les questions de responsabilité juridique en cas d'erreur. EchoNext démontre toutefois une performance constante quel que soit le contexte.
+                Une série d'articles scientifiques pointe trois problèmes récurrents : les biais algorithmiques (précision moindre sur certains groupes ethniques), la « boîte noire », et les questions de responsabilité juridique en cas d'erreur (médecin, fabricant ou établissement ?). La HAS a publié de nouvelles directives en avril 2025, mais des zones grises demeurent.
               </p>
               <div class="veille-src">Source — acmcorpo.fr · campusmedx.fr</div>
+            </div>
+
+            <div class="veille-card">
+              <div class="veille-meta">
+                <span class="veille-date">Nov. 2025</span>
+                <span class="veille-tag">Cardiologie</span>
+              </div>
+              <div class="veille-title">EchoNext surpasse les cardiologues expérimentés</div>
+              <p class="veille-excerpt">
+                L'IA EchoNext démontre dans une évaluation contrôlée qu'elle diagnostique les cardiopathies structurelles avec des performances supérieures à celles de spécialistes humains, y compris sur des patients sans antécédent d'imagerie. Parallèlement, Eko Low EF AI reçoit une validation pour détecter en quelques secondes une faible fraction d'éjection — marqueur précoce d'insuffisance cardiaque.
+              </p>
+              <div class="veille-key">
+                Performances constantes quel que soit le groupe ethnique ou le contexte clinique.
+              </div>
+              <div class="veille-src">Source — Wikipedia · Eko Health</div>
             </div>
 
             <div class="veille-card">
@@ -1207,12 +1248,27 @@
               </div>
               <div class="veille-title">Nature Medicine : les IA en conditions réelles</div>
               <p class="veille-excerpt">
-                Le 9 février, Nature Medicine publie une étude britannico-américaine comparant trois IA médicales avec de vrais patients. Résultat : les IA performantes en test théorique peuvent échouer en conditions réelles faute d'intégration clinique adéquate.
+                Le 9 février, Nature Medicine publie une étude britannico-américaine comparant trois IA médicales avec de vrais patients. Résultat : les IA performantes en test théorique peuvent échouer en conditions réelles — les patients ne savent pas quelles informations fournir et les applications n'ont pas été conçues pour cette imperfection naturelle. Conclusion : aucune « prête pour un déploiement dans les soins directs ».
               </p>
               <div class="veille-key">
                 Les tâches administratives mobilisent 25–35 % du temps des médecins (DREES). L'IA générative commence à absorber cette charge.
               </div>
               <div class="veille-src">Source — Nature Medicine · espace-ethique-azureen.fr</div>
+            </div>
+
+            <div class="veille-card">
+              <div class="veille-meta">
+                <span class="veille-date">Fév. 2026</span>
+                <span class="veille-tag">Pharmacologie</span>
+              </div>
+              <div class="veille-title">Insilico Medicine : de 6 ans à 30 mois pour découvrir un médicament</div>
+              <p class="veille-excerpt">
+                La société Insilico Medicine démontre qu'elle peut passer de la simulation informatique aux essais cliniques en seulement 30 mois contre 6 ans habituellement, grâce à l'IA appliquée à la découverte de médicaments contre la fibrose pulmonaire. La revue Médecine &amp; Droit publie parallèlement un article sur les enjeux juridiques de l'IA responsable en santé : transparence, biais, consentement éclairé et responsabilité médicale.
+              </p>
+              <div class="veille-key">
+                Réduction du délai de découverte : de 6 ans à 30 mois grâce à l'IA.
+              </div>
+              <div class="veille-src">Source — Sermo.com · galeon.care · Médecine &amp; Droit</div>
             </div>
 
           </div>
@@ -1241,15 +1297,27 @@
 
             <div class="veille-card">
               <div class="veille-meta">
-                <span class="veille-date">Avr. 2026</span>
+                <span class="veille-date">7 Avr. 2026</span>
+                <span class="veille-tag">Cardiologie</span>
+              </div>
+              <div class="veille-title">Rapport européen : IA dans les soins cardiovasculaires</div>
+              <p class="veille-excerpt">
+                La Commission européenne publie un rapport dédié à l'IA dans les soins cardiovasculaires (« De la promesse à la pratique »), recensant les applications concrètes dans la prévention, le diagnostic et la réadaptation des maladies cardiovasculaires — première cause de mortalité en Europe.
+              </p>
+              <div class="veille-src">Source — Commission européenne (7 avr. 2026)</div>
+            </div>
+
+            <div class="veille-card">
+              <div class="veille-meta">
+                <span class="veille-date">20–21 Avr. 2026</span>
                 <span class="veille-tag">OMS + 63,2 M€</span>
               </div>
-              <div class="veille-title">L'OMS dresse le premier état des lieux mondial</div>
+              <div class="veille-title">L'OMS dresse le premier état des lieux mondial + 63,2 M€ investis</div>
               <p class="veille-excerpt">
-                Le 20 avril, l'OMS/Europe publie son premier état des lieux de l'IA dans les soins de santé de l'UE : 74 % des pays utilisent l'IA pour le diagnostic, 63 % emploient des chatbots pour impliquer les patients. Le 21 avril, la Commission annonce 63,2 M€ pour soutenir l'innovation IA en santé.
+                Le 20 avril, l'OMS/Europe publie son premier état des lieux de l'IA dans les soins de santé de l'UE : 74 % des pays utilisent l'IA pour le diagnostic, 63 % emploient des chatbots pour impliquer les patients — mais un retard alarmant dans la formation du personnel soignant est souligné. Le lendemain, la Commission annonce 63,2 M€ pour l'innovation IA en santé, ciblant notamment le dépistage précoce du cancer via la plateforme Cancer Image Europe (60 millions d'images d'ici fin 2026) et l'initiative 1+Million Génomes.
               </p>
               <div class="veille-key">
-                63,2 M€ ciblés notamment sur le dépistage précoce du cancer par IA.
+                74 % des États UE utilisent l'IA pour le diagnostic · 63,2 M€ investis par la Commission européenne.
               </div>
               <div class="veille-src">Source — OMS/Europe · Commission européenne (21 avr. 2026)</div>
             </div>
@@ -1282,9 +1350,28 @@
         </div>
       </div>
 
+      <!-- Conclusion -->
+      <div style="margin-top:64px; border:1px solid var(--border2); padding:32px 36px; background:var(--surface);">
+        <div class="block-title" style="margin-bottom:20px;">Bilan de veille — 3 leçons</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px;">
+          <div>
+            <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;">01 — Rythme</div>
+            <p style="font-size:13.5px;color:var(--text-muted);line-height:1.7;">L'innovation est non-linéaire et s'accélère : en moins d'un an, le nombre de dispositifs médicaux IA approuvés par la FDA est passé de 873 à 1 450.</p>
+          </div>
+          <div>
+            <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;">02 — Terrain</div>
+            <p style="font-size:13.5px;color:var(--text-muted);line-height:1.7;">Le déploiement réel reste plus difficile que la technologie : une IA performante en test peut échouer face à de vrais patients (étude Nature Medicine, fév. 2026).</p>
+          </div>
+          <div>
+            <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;">03 — Règlement</div>
+            <p style="font-size:13.5px;color:var(--text-muted);line-height:1.7;">Le cadre réglementaire se structure mais avec des retards : l'annexe I de l'AI Act est repoussée à 2028, laissant des angles morts préoccupants.</p>
+          </div>
+        </div>
+      </div>
+
       <!-- Lien document veille -->
       <div style="margin-top:40px;">
-        <a class="doc-row" href="veille_IA_medicale_BTS_SIO.docx" target="_blank">
+        <a class="doc-row" href="documents/veille-ia-medicale.docx" target="_blank">
           <div class="doc-icon-wrap">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
           </div>
@@ -1317,7 +1404,7 @@
           <div class="t">Télécharger le tableau de synthèse officiel</div>
           <div class="s">Fichier Excel fourni par l'établissement · Annexe 8-1 · BTS SIO Session 2026</div>
         </div>
-        <a href="8-1_-_BTS_SIO_-_2025_-_Annexe_8-1_-_Epreuve_E5_-_Tableau_de_synthèse.xlsx" download>
+        <a href="documents/tableau-synthese-e5.xlsx" download>
           Télécharger (.xlsx) →
         </a>
       </div>
@@ -1363,7 +1450,7 @@
 
             <tr>
               <td>
-                Titre de l'activité 1
+                ICGO — Gestion des formations
                 <span class="type-badge lycee">Lycée</span>
               </td>
               <td>09/24 → 11/24</td>
@@ -1377,7 +1464,7 @@
 
             <tr>
               <td>
-                Titre de l'activité 2
+                GSB — Gestion des comptes rendus
                 <span class="type-badge lycee">Lycée</span>
               </td>
               <td>11/24 → 01/25</td>
@@ -1391,7 +1478,7 @@
 
             <tr>
               <td>
-                Titre de l'activité 3
+                Activité lycée 3
                 <span class="type-badge lycee">Lycée</span>
               </td>
               <td>02/25 → 04/25</td>
@@ -1427,7 +1514,7 @@
                 Stage entreprise 1ère année
                 <span class="type-badge stage">Stage</span>
               </td>
-              <td>XX/25 → XX/25</td>
+              <td>06/25 → 07/25</td>
               <td class="chk">◆</td>
               <td class="chk">◆</td>
               <td class="chk">◆</td>
@@ -1446,7 +1533,7 @@
                 Stage entreprise 2ème année
                 <span class="type-badge stage">Stage</span>
               </td>
-              <td>XX/26 → XX/26</td>
+              <td>01/26 → 03/26</td>
               <td class="emp">—</td>
               <td class="chk">◆</td>
               <td class="emp">—</td>
@@ -1503,7 +1590,7 @@
               <span class="dv">5 semaines</span>
             </div>
           </div>
-          <a class="attest-dl" href="attestation-stage-1.pdf" target="_blank">
+          <a class="attest-dl" href="documents/attestation-stage-1.pdf" target="_blank">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
             Télécharger l'attestation
           </a>
@@ -1530,7 +1617,7 @@
               <span class="dv">8 semaines</span>
             </div>
           </div>
-          <a class="attest-dl" href="attestation-stage-2.pdf" target="_blank">
+          <a class="attest-dl" href="documents/attestation-stage-2.pdf" target="_blank">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
             Télécharger l'attestation
           </a>
@@ -1594,6 +1681,168 @@
 
     // Init
     document.addEventListener('DOMContentLoaded', () => show('home'));
+  </script>
+
+  <!-- ─── THREE.JS 3D CONSTELLATION ─── -->
+  <script>
+  (function() {
+    const canvas = document.getElementById('hero-canvas');
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setClearColor(0x000000, 0);
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 1000);
+    camera.position.z = 280;
+
+    // ── Resize ──
+    function resize() {
+      const w = window.innerWidth, h = window.innerHeight;
+      renderer.setSize(w, h);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+    }
+
+    // ── Particles ──
+    const COUNT = 180;
+    const positions = new Float32Array(COUNT * 3);
+    const velocities = [];
+    const SPREAD = 260;
+
+    for (let i = 0; i < COUNT; i++) {
+      positions[i * 3]     = (Math.random() - 0.5) * SPREAD;
+      positions[i * 3 + 1] = (Math.random() - 0.5) * SPREAD;
+      positions[i * 3 + 2] = (Math.random() - 0.5) * SPREAD * 0.5;
+      velocities.push(
+        (Math.random() - 0.5) * 0.04,
+        (Math.random() - 0.5) * 0.04,
+        (Math.random() - 0.5) * 0.02
+      );
+    }
+
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+    // Mix of blue and gold particles
+    const colors = new Float32Array(COUNT * 3);
+    for (let i = 0; i < COUNT; i++) {
+      const t = Math.random();
+      if (t < 0.12) {
+        // Gold accent
+        colors[i*3]   = 0.557; // #8eb4e0 → gold tint
+        colors[i*3+1] = 0.706;
+        colors[i*3+2] = 0.878;
+      } else {
+        // Blue shades
+        const s = 0.4 + Math.random() * 0.6;
+        colors[i*3]   = 0.25 * s;
+        colors[i*3+1] = 0.52 * s;
+        colors[i*3+2] = 0.83 * s;
+      }
+    }
+    geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+    const mat = new THREE.PointsMaterial({
+      size: 2.2,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.85,
+      sizeAttenuation: true,
+    });
+    const points = new THREE.Points(geo, mat);
+    scene.add(points);
+
+    // ── Lines (constellation) ──
+    const lineGeo = new THREE.BufferGeometry();
+    const linePositions = new Float32Array(COUNT * COUNT * 6); // worst case
+    const lineColors    = new Float32Array(COUNT * COUNT * 6);
+    lineGeo.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
+    lineGeo.setAttribute('color',    new THREE.BufferAttribute(lineColors,    3));
+    const lineMat = new THREE.LineSegments(lineGeo, new THREE.LineBasicMaterial({
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.18,
+    }));
+    scene.add(lineMat);
+
+    const MAX_DIST = 68;
+
+    function updateLines() {
+      const pos = geo.attributes.position.array;
+      let li = 0;
+      for (let a = 0; a < COUNT; a++) {
+        for (let b = a + 1; b < COUNT; b++) {
+          const dx = pos[a*3]   - pos[b*3];
+          const dy = pos[a*3+1] - pos[b*3+1];
+          const dz = pos[a*3+2] - pos[b*3+2];
+          const d  = Math.sqrt(dx*dx + dy*dy + dz*dz);
+          if (d < MAX_DIST) {
+            const alpha = 1 - d / MAX_DIST;
+            linePositions[li]   = pos[a*3];   linePositions[li+1] = pos[a*3+1]; linePositions[li+2] = pos[a*3+2];
+            linePositions[li+3] = pos[b*3];   linePositions[li+4] = pos[b*3+1]; linePositions[li+5] = pos[b*3+2];
+            // Line colour = averaged particle colour, dimmed
+            lineColors[li]   = (colors[a*3]   + colors[b*3])   * 0.5 * alpha;
+            lineColors[li+1] = (colors[a*3+1] + colors[b*3+1]) * 0.5 * alpha;
+            lineColors[li+2] = (colors[a*3+2] + colors[b*3+2]) * 0.5 * alpha;
+            lineColors[li+3] = lineColors[li];
+            lineColors[li+4] = lineColors[li+1];
+            lineColors[li+5] = lineColors[li+2];
+            li += 6;
+          }
+        }
+      }
+      lineGeo.setDrawRange(0, li / 3);
+      lineGeo.attributes.position.needsUpdate = true;
+      lineGeo.attributes.color.needsUpdate    = true;
+    }
+
+    // ── Mouse parallax ──
+    let mouseX = 0, mouseY = 0;
+    let targetX = 0, targetY = 0;
+    document.addEventListener('mousemove', e => {
+      mouseX = (e.clientX / window.innerWidth  - 0.5) * 2;
+      mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+    });
+
+    // ── Animate ──
+    let t = 0;
+    function animate() {
+      requestAnimationFrame(animate);
+      t += 0.004;
+
+      // Smooth camera parallax
+      targetX += (mouseX * 18 - targetX) * 0.04;
+      targetY += (-mouseY * 12 - targetY) * 0.04;
+      camera.position.x = targetX;
+      camera.position.y = targetY;
+      camera.lookAt(scene.position);
+
+      // Move particles
+      const pos = geo.attributes.position.array;
+      for (let i = 0; i < COUNT; i++) {
+        pos[i*3]     += velocities[i*3];
+        pos[i*3+1]   += velocities[i*3+1];
+        pos[i*3+2]   += velocities[i*3+2];
+        // Wrap
+        if (Math.abs(pos[i*3])     > SPREAD/2) velocities[i*3]   *= -1;
+        if (Math.abs(pos[i*3+1])   > SPREAD/2) velocities[i*3+1] *= -1;
+        if (Math.abs(pos[i*3+2])   > SPREAD*0.25) velocities[i*3+2] *= -1;
+      }
+      geo.attributes.position.needsUpdate = true;
+
+      // Slow scene rotation
+      scene.rotation.y = Math.sin(t * 0.3) * 0.15;
+      scene.rotation.x = Math.cos(t * 0.2) * 0.08;
+
+      updateLines();
+      renderer.render(scene, camera);
+    }
+
+    // ── Init ──
+    window.addEventListener('resize', resize);
+    resize();
+    animate();
+  })();
   </script>
 </body>
 </html>
